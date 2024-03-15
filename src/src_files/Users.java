@@ -18,13 +18,6 @@ public abstract class Users {
 		this.company = company;
 	}
 
-	public Users(String loginId, String firstName, String lastName, String company) {
-		this.loginId = loginId;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.company = company;
-	}
-
 	public String getLoginId() {
 		return loginId;
 	}
