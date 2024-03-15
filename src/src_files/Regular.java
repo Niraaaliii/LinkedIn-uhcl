@@ -1,14 +1,14 @@
 package src_files;
 
-import java.util.ArrayList;
-
 public class Regular extends Users {
 
-	public Regular(String loginId, String password, String accountType, String company) {
-		super(loginId, password, accountType, company);
-		// TODO Auto-generated constructor stub
+	public Regular(String loginId,String fname, String lname, String password, String accountType, String company) {
+		super(loginId,fname,lname, password, accountType, company);
 	}
 
 	
+	public Regular(String loginId,String fname, String lname, String company) {
+		super(loginId,fname,lname, company);
+	}
 
 }

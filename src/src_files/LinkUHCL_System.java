@@ -54,6 +54,28 @@ public class LinkUHCL_System {
 			System.out.println("Please enter your username again : ");
 			loginID = input.nextLine();
 		}
+		
+		System.out.println("Please enter your First Name : ");
+		String fname = input.nextLine();
+		
+		while (fname.isEmpty()) {
+			System.out.println("**************************************************************");
+			System.out.println("\n\n First Name Invalid \n\n");
+			System.out.println("**************************************************************");
+			System.out.println("Please enter your First Name : ");
+			fname = input.nextLine();
+		}
+		
+		System.out.println("Please enter your Last Name : ");
+		String lname = input.nextLine();
+		
+		while (lname.isEmpty()) {
+			System.out.println("**************************************************************");
+			System.out.println("\n\n Last Name Invalid \n\n");
+			System.out.println("**************************************************************");
+			System.out.println("Please enter your Last Name : ");
+			lname = input.nextLine();
+		}
 
 		System.out.println("Please enter your password : ");
 		String password = input.nextLine();
@@ -80,7 +102,7 @@ public class LinkUHCL_System {
 			companyName = input.nextLine();
 		}
 
-		data.createAccount(loginID, password, accType, companyName);
+		data.createAccount(loginID, fname, lname, password, accType, companyName);
 
 	}
 
@@ -93,10 +115,10 @@ public class LinkUHCL_System {
 		String password = input.next();
 
 		theUserAccount = data.login(id, password);
-
+		String fullUserName = data.getUserFullName(id);
 		if (theUserAccount != null) {
 			theUserAccount.setData(data);
-			theUserAccount.WelcomePage(id);
+			theUserAccount.WelcomePage(fullUserName);
 		} else {
 			System.out.println("The login failed");
 			System.out.println();
