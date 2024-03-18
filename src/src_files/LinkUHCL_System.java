@@ -118,7 +118,10 @@ public class LinkUHCL_System {
 		String fullUserName = data.getUserFullName(id);
 		if (theUserAccount != null) {
 			theUserAccount.setData(data);
-			theUserAccount.WelcomePage(fullUserName);
+			if(theUserAccount.getType().equals("Regular"))
+				theUserAccount.WelcomePageRegular(fullUserName);
+			else
+				theUserAccount.WelcomePageRecruiter(fullUserName);
 		} else {
 			System.out.println("The login failed");
 			System.out.println();

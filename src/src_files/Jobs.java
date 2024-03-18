@@ -4,15 +4,24 @@ import java.sql.Date;
 
 public class Jobs {
 
-	String jobID;
+	int jobID;
 	String jobTitle;
+	String jobDesc;
 	String creator;
 	Date dateandtime;
 	
-	public String getJobID() {
+	public Jobs(int jID, String jt, String jd, String c, Date dt) {
+		jobID = jID;
+		jobTitle = jt;
+		jobDesc = jd;
+		creator = c;
+		dateandtime = dt;
+	}
+	
+	public int getJobID() {
 		return jobID;
 	}
-	public void setJobID(String jobID) {
+	public void setJobID(int jobID) {
 		this.jobID = jobID;
 	}
 	public String getJobTitle() {
@@ -32,5 +41,13 @@ public class Jobs {
 	}
 	public void setDateandtime(Date dateandtime) {
 		this.dateandtime = dateandtime;
+	}
+
+	public String getJobDesc() {
+		return jobDesc;
+	}
+
+	public void setJobDesc(String jobDesc) {
+		this.jobDesc = jobDesc;
 	}
 }

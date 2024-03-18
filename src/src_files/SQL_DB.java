@@ -2,6 +2,8 @@ package src_files;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SQL_DB implements DataStorage {
 
@@ -78,12 +80,6 @@ public class SQL_DB implements DataStorage {
 
 	}
 
-//	@Override
-//	public ArrayList<UserAccount> getUsers() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
 	@Override
 	public ArrayList<UserAccount> getConnections(String loginID) {
 
@@ -152,7 +148,7 @@ public class SQL_DB implements DataStorage {
 	}
 
 	@Override
-	public ArrayList<String> jobRecommendations(String loginID) {
+	public ArrayList<Jobs> jobRecommendations(String loginID) {
 		return null;
 
 	}
@@ -188,14 +184,40 @@ public class SQL_DB implements DataStorage {
 	}
 
 	@Override
-	public ArrayList<UserAccount> viewConnectionProfile() {
-		return null;
+	public Set<UserAccount> viewConnectionProfile(String loginId) {
+		
+		try {
 
-	}
+			Set<UserAccount> connProfile = new HashSet<>();
 
-	@Override
-	public ArrayList<Jobs> VieworShareJobs() {
-		return null;
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+
+			resultSet = statement
+					.executeQuery("Select loginID , firstName , lastName , company , type from users where loginID = '" + loginId + "'");
+
+			while (resultSet.next()) {
+				UserAccount ua = new UserAccount(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3),
+						resultSet.getString(4), resultSet.getString(5));
+				connProfile.add(ua);
+			}
+
+			return connProfile;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
 
 	}
 
@@ -206,11 +228,11 @@ public class SQL_DB implements DataStorage {
 	}
 
 	@Override
-	public ArrayList<UserAccount> connectionRecommendationsWithinOrganization(String loginID) {
+	public Set<UserAccount> connectionRecommendationsWithinOrganization(String loginID) {
 
 		try {
 
-			ArrayList<UserAccount> connectionRec = new ArrayList<UserAccount>();
+			Set<UserAccount> connectionRec = new HashSet<UserAccount>();
 
 			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
 			statement = connection.createStatement();
@@ -246,11 +268,11 @@ public class SQL_DB implements DataStorage {
 	}
 
 	@Override
-	public ArrayList<UserAccount> connectionRecommendations2ndDegree(String loginID) {
+	public Set<UserAccount> connectionRecommendations2ndDegree(String loginID) {
 
 		try {
 
-			ArrayList<UserAccount> connectionRec = new ArrayList<UserAccount>();
+			Set<UserAccount> connectionRec = new HashSet<UserAccount>();
 
 			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
 			statement = connection.createStatement();
@@ -355,6 +377,142 @@ public class SQL_DB implements DataStorage {
 
 		}
 
+	}
+
+	@Override
+	public int ConnectionCount(String loginId) {
+		try {
+
+			int connCount  = 0 ;
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+
+			resultSet = statement
+					.executeQuery("SELECT COUNT(connectionID) as con_count  FROM connection "
+							+ "WHERE requesterID = '"+ loginId +"' AND status = 'approved'");
+
+			while (resultSet.next()) {
+				connCount = resultSet.getInt("con_count");
+			}
+
+			return connCount;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+		
+	}
+
+	@Override
+	public void ShareJob(String loginID, int jobID) {
+		try {
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+			statement.executeUpdate("INSERT INTO jobsharing(jobID, userID) VALUES ( '"+jobID+"', '"+loginID+"')");
+
+			connection.setAutoCommit(false);
+			connection.commit();
+
+			System.out.println("Shared Job successfully !!! ");
+
+		} catch (SQLException e) {
+			System.out.println("Failed to Share Job !!! ");
+			e.printStackTrace();
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	@Override
+	public void PostJob(String loginID, String jobTitle, String jobDesc) {
+		try {
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+			statement.executeUpdate("INSERT INTO job(creator, jobTitle, jobDesc) "
+					+ "VALUES ('"+loginID+"','"+jobTitle+"', '"+jobDesc+"' )");
+
+			connection.setAutoCommit(false);
+			connection.commit();
+
+			System.out.println("Posted Job successfully !!! ");
+
+		} catch (SQLException e) {
+			System.out.println("Failed to Post Job !!! ");
+			e.printStackTrace();
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	@Override
+	public ArrayList<Jobs> ViewJobsbyRecruiter(String loginID) {
+		
+		try {
+
+			ArrayList<Jobs> jobsByRecruiter = new ArrayList<Jobs>();
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+
+			resultSet = statement
+					.executeQuery("SELECT j.jobID,  j.creator , j.jobTitle , j.jobDesc , j.dateandtime as date_of_posting from job j join connection c "
+							+ "on c.requestedID = j.creator WHERE c.requesterID = '"+ loginID+"' AND c.status = 'approved';");
+
+			while (resultSet.next()) {
+				Jobs j = new Jobs( resultSet.getInt(1), resultSet.getString(4) ,resultSet.getString(2) , resultSet.getString(3) ,resultSet.getDate("date_of_posting") );
+				jobsByRecruiter.add(j);
+			}
+
+			return jobsByRecruiter;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	@Override
+	public ArrayList<Jobs> ViewJobsbyConnection(String loginID) {
+		
+		return null;
 	}
 
 }
