@@ -270,6 +270,49 @@ public class UserAccount {
 		}
 	}
 
+	public void printJob(Jobs jb) {
+		
+		System.out.println("-----------------------------");
+		System.out.println(" Job Posted by : " + data.getUserFullName(jb.getCreator()) + " On " + jb.getDateandtime());
+		System.out.println(" Job Title : " +  jb.getJobTitle());
+		System.out.println(" Job Description : " +  jb.getJobDesc());
+		System.out.println("-----------------------------");
+		System.out.print(" Do you want to share it  ? ");
+		System.out.println("");
+		
+	}
+	
+	public void printUserAccount(UserAccount ua) {
+		if (ua.getType().equals("Regular")) {
+			System.out.print(ua.getFirstName() + " " + ua.getLastName() + " at " + ua.getCompany() + ": ");
+		} else
+			System.out.print(ua.getFirstName() + " " + ua.getLastName() + " - " + ua.getType() + " at "
+					+ ua.getCompany() + ": ");
+	}
+
+	public void printUserProfile(String profileID) {
+		Set<UserAccount> conProf =  data.viewConnectionProfile(profileID);
+		
+		if(!conProf.isEmpty()) {
+			for(UserAccount u : conProf) {
+				System.out.println("-------------------------------------------------------");
+				System.out.println( data.getUserFullName(profileID)   + "'s Profle");
+				System.out.println("Full Name : " + data.getUserFullName(profileID));
+				System.out.println("Company : " + u.getCompany());
+				if(u.getType().equals("Regular"))
+					System.out.println("Position : Staff");
+				else
+					System.out.println("Position : "+ u.getType());
+				System.out.println("No. of Connections : " + data.ConnectionCount(profileID) );
+				System.out.println("-------------------------------------------------------");
+				
+			}
+		}
+		else {
+			System.out.println("--- No profile found !!! ---");
+		}
+	}
+	
 	public String getLoginID() {
 		return loginID;
 	}
@@ -316,48 +359,5 @@ public class UserAccount {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-
-	public void printJob(Jobs jb) {
-		
-		System.out.println("-----------------------------");
-		System.out.println(" Job Posted by : " + data.getUserFullName(jb.getCreator()) + " On " + jb.getDateandtime());
-		System.out.println(" Job Title : " +  jb.getJobTitle());
-		System.out.println(" Job Description : " +  jb.getJobDesc());
-		System.out.println("-----------------------------");
-		System.out.print(" Do you want to share it  ? ");
-		System.out.println("");
-		
-	}
-	
-	public void printUserAccount(UserAccount ua) {
-		if (ua.getType().equals("Regular")) {
-			System.out.print(ua.getFirstName() + " " + ua.getLastName() + " at " + ua.getCompany() + ": ");
-		} else
-			System.out.print(ua.getFirstName() + " " + ua.getLastName() + " - " + ua.getType() + " at "
-					+ ua.getCompany() + ": ");
-	}
-
-	public void printUserProfile(String profileID) {
-		Set<UserAccount> conProf =  data.viewConnectionProfile(profileID);
-		
-		if(!conProf.isEmpty()) {
-			for(UserAccount u : conProf) {
-				System.out.println("-------------------------------------------------------");
-				System.out.println( data.getUserFullName(profileID)   + "'s Profle");
-				System.out.println("Full Name : " + data.getUserFullName(profileID));
-				System.out.println("Company : " + u.getCompany());
-				if(u.getType().equals("Regular"))
-					System.out.println("Position : Staff");
-				else
-					System.out.println("Position : "+ u.getType());
-				System.out.println("No. of Connections : " + data.ConnectionCount(profileID) );
-				System.out.println("-------------------------------------------------------");
-				
-			}
-		}
-		else {
-			System.out.println("--- No profile found !!! ---");
-		}
 	}
 }
