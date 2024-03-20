@@ -3,6 +3,8 @@ package src_files;
 import java.util.Scanner;
 
 public class LinkUHCL_System {
+	
+	private Scanner input = new Scanner(System.in);
 
 	private UserAccount theUserAccount;
 
@@ -13,7 +15,7 @@ public class LinkUHCL_System {
 	}
 
 	public void showMainPage() {
-		Scanner input = new Scanner(System.in);
+		
 		String selection = "";
 
 		while (!selection.equals("x")) {
@@ -38,7 +40,6 @@ public class LinkUHCL_System {
 	}
 
 	public void createAccount() {
-		Scanner input = new Scanner(System.in);
 
 		System.out.println("Please enter your username [loginID] : ");
 		String loginID = input.nextLine();
@@ -107,7 +108,6 @@ public class LinkUHCL_System {
 	}
 
 	public void login() {
-		Scanner input = new Scanner(System.in);
 
 		System.out.println("Please enter your loginID");
 		String id = input.next();
