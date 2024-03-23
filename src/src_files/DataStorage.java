@@ -16,11 +16,10 @@ public interface DataStorage {
 	// jobs
 	ArrayList<Jobs> ViewJobsbyRecruiter(String loginID); //  can view the job shared by connected recruiter
 	
-	ArrayList<Jobs> ViewJobsbyConnection(String loginID); //  can view the job shared by connections
-	
 	void ShareJob(String loginID, int jobID); // can share the job to connections
 	
 	void PostJob(String loginID, String jobTitle, String jobDesc); //post a job
+
 
 	ArrayList<Jobs> jobRecommendations(String loginID); // give job recommendations based what connections posted
 
@@ -45,5 +44,18 @@ public interface DataStorage {
 	
 	int ConnectionCount(String loginId);
 
-	ArrayList<String> notifications(); // can see notification
+	//notification
+	ArrayList<Notifications> notifications(String loginID); // can see notification
+	
+	void updateNotification(int not_id,String updateStatus);
+	
+	//recommendation
+	
+	void sendRequestForRecommendation(String loginID, String requestedID); // sends Recommendation request to that person
+	
+	ArrayList<Recommendation> recommendations(String loginID); // can see recommendations
+	
+	void updateRecommendation(String loginID, String requestedID, String updateStatus); //update the recommendations
+	
+	
 }

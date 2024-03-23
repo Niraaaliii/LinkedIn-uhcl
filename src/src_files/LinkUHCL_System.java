@@ -16,9 +16,10 @@ public class LinkUHCL_System {
 
 	public void showMainPage() {
 		
-		String selection = "";
+		String selection = " ";
 
 		while (!selection.equals("x")) {
+			
 			System.out.println();
 			System.out.println("*** Welcome to LinkUHCL ***");
 			System.out.println("Please Select Option: ");
@@ -28,14 +29,10 @@ public class LinkUHCL_System {
 
 			selection = input.nextLine();
 			System.out.println();
-
-			if (selection.equals("1")) {
-				createAccount();
-			} else if (selection.equals("2")) {
-				login();
-
-			}
-
+			
+			if(selection.equals("1")) { createAccount(); continue;  }
+			else if (selection.equals("2")) { login(); continue; }
+			else if(selection.equals("x")) break;
 		}
 	}
 

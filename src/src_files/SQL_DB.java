@@ -147,11 +147,7 @@ public class SQL_DB implements DataStorage {
 		}
 	}
 
-	@Override
-	public ArrayList<Jobs> jobRecommendations(String loginID) {
-		return null;
-
-	}
+	
 
 	@Override
 	public void sendRequestForConnection(String loginID, String requestedID) {
@@ -163,10 +159,13 @@ public class SQL_DB implements DataStorage {
 			statement.executeUpdate("INSERT INTO connection(requesterID, requestedID) VALUES ( '" + loginID + "','"
 					+ requestedID + "')");
 
+			statement.executeUpdate("INSERT INTO notification(sender_user_id, receiver_user_id,ntype) VALUES ('"+loginID+"', '"+requestedID+"' , 'Connection' )");
+			
 			connection.setAutoCommit(false);
 			connection.commit();
 
 			System.out.println("Sent connection request to " + requestedID + " successfully !!! ");
+			System.out.println("Sent Notification for connection request to " + requestedID + " successfully !!! ");
 
 		} catch (SQLException e) {
 			System.out.println("connection request to " + requestedID + " failed !!! ");
@@ -222,8 +221,39 @@ public class SQL_DB implements DataStorage {
 	}
 
 	@Override
-	public ArrayList<String> notifications() {
-		return null;
+	public ArrayList<Notifications> notifications(String loginID) {
+		try {
+
+			ArrayList<Notifications> not = new ArrayList<Notifications>();
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+
+			resultSet = statement
+					.executeQuery("SELECT * FROM notification WHERE receiver_user_id = '"+loginID+"' AND nstatus = 'Not Seen';");
+
+			while (resultSet.next()) {
+				Notifications n = new Notifications(resultSet.getInt(1),resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), 
+						resultSet.getString(5), resultSet.getDate("time"));
+				not.add(n);
+			}
+
+			return not;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
 
 	}
 
@@ -417,30 +447,38 @@ public class SQL_DB implements DataStorage {
 
 	@Override
 	public void ShareJob(String loginID, int jobID) {
-		try {
 
-			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
-			statement = connection.createStatement();
-			statement.executeUpdate("INSERT INTO jobsharing(jobID, userID) VALUES ( '"+jobID+"', '"+loginID+"')");
-
-			connection.setAutoCommit(false);
-			connection.commit();
-
-			System.out.println("Shared Job successfully !!! ");
-
-		} catch (SQLException e) {
-			System.out.println("Failed to Share Job !!! ");
-			e.printStackTrace();
-
-		} finally {
+		if (!existsJob(jobID, loginID)) {
 			try {
-				connection.close();
-				statement.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 
+				connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+				statement = connection.createStatement();
+
+				statement.executeUpdate(
+						"INSERT INTO jobsharing(jobID, userID) VALUES ( '" + jobID + "', '" + loginID + "') ");
+
+				connection.setAutoCommit(false);
+				connection.commit();
+
+				System.out.println("Shared Job successfully !!! ");
+
+			} catch (SQLException e) {
+				System.out.println("Failed to Share Job !!! ");
+				e.printStackTrace();
+
+			} finally {
+				try {
+					connection.close();
+					statement.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}
+		} else {
+			System.out.println("You have already shared this Job !!! ");
 		}
+
 	}
 
 	@Override
@@ -484,7 +522,7 @@ public class SQL_DB implements DataStorage {
 
 			resultSet = statement
 					.executeQuery("SELECT j.jobID,  j.creator , j.jobTitle , j.jobDesc , j.dateandtime as date_of_posting from job j join connection c "
-							+ "on c.requestedID = j.creator WHERE c.requesterID = '"+ loginID+"' AND c.status = 'approved';");
+							+ "on c.requestedID = j.creator WHERE c.requesterID = '"+ loginID+"' AND c.status = 'approved'");
 
 			while (resultSet.next()) {
 				Jobs j = new Jobs( resultSet.getInt(1), resultSet.getString(4) ,resultSet.getString(2) , resultSet.getString(3) ,resultSet.getDate("date_of_posting") );
@@ -508,11 +546,208 @@ public class SQL_DB implements DataStorage {
 
 		}
 	}
-
+	
 	@Override
-	public ArrayList<Jobs> ViewJobsbyConnection(String loginID) {
-		
-		return null;
+	public ArrayList<Jobs> jobRecommendations(String loginID) {
+		try {
+
+			ArrayList<Jobs> jobsByConn = new ArrayList<Jobs>();
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+
+			resultSet = statement
+					.executeQuery("SELECT j.jobID, j.creator , j.jobTitle , j.jobDesc , j.dateandtime as date_of_posting "
+							+ "FROM jobsharing js JOIN job j ON js.jobID = j.jobID JOIN connection c ON j.creator = c.requestedID "
+							+ "WHERE c.requesterID = '"+loginID+"' AND c.status = 'approved' ORDER BY jobSharingID DESC LIMIT 3");
+
+			while (resultSet.next()) {
+				Jobs j = new Jobs( resultSet.getInt(1), resultSet.getString(4) ,resultSet.getString(2) , resultSet.getString(3) ,resultSet.getDate("date_of_posting") );
+				jobsByConn.add(j);
+			}
+
+			return jobsByConn;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
 	}
 
+	public boolean existsJob(int jobID, String userID) {
+		
+		try {
+
+			
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+
+			resultSet = statement
+					.executeQuery("SELECT 1 from jobsharing WHERE jobID = '"+jobID+"' and userID = '"+userID+"' ");
+
+			while (resultSet.next()) {
+				return true;
+			}
+
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+		return false;
+		
+		
+	}
+
+	@Override
+	public void updateNotification(int not_id,  String updateStatus) {
+		try {
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+
+			statement.executeUpdate("UPDATE notification SET nstatus = '"+updateStatus+"' WHERE id = '"+not_id+"'");
+
+			connection.setAutoCommit(false);
+			connection.commit();
+
+			System.out.println(" Notification seen successfully !!! ");
+			
+		} catch (SQLException e) {
+			System.out.println(" Notification failed to execute !!! ");
+			e.printStackTrace();
+			
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+		
+	}
+
+	@Override
+	public ArrayList<Recommendation> recommendations(String loginID) {
+		try {
+
+			ArrayList<Recommendation> rec = new ArrayList<Recommendation>();
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+
+			resultSet = statement
+					.executeQuery("SELECT * FROM recommendation WHERE receiver_id = '"+loginID+"' AND status = 'Pending'");
+
+			while (resultSet.next()) {
+				Recommendation r = new Recommendation(resultSet.getInt(1),resultSet.getString(2), resultSet.getString(3), resultSet.getString(4));
+				rec.add(r);
+			}
+
+			return rec;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	@Override
+	public void updateRecommendation(String loginID, String requestedID, String updateStatus) {
+		try {
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+
+			statement.executeUpdate("UPDATE recommendation SET status = '"+updateStatus+"' WHERE sender_id = '"+loginID+"' and receiver_id = '"+requestedID+"' ");
+
+			connection.setAutoCommit(false);
+			connection.commit();
+
+			System.out.println(" Recommendation request " + updateStatus  +" successfully !!! ");
+			
+		} catch (SQLException e) {
+			System.out.println(" Recommendation request failed to "+ updateStatus +" !!! ");
+			e.printStackTrace();
+			
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+		
+	}
+
+	@Override
+	public void sendRequestForRecommendation(String loginID, String requestedID) {
+		
+		try {
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+			statement.executeUpdate("INSERT INTO recommendation(sender_id, receiver_id, status) VALUES ('"+loginID+"', '"+requestedID+"' , 'Pending' )");
+
+			statement.executeUpdate("INSERT INTO notification(sender_user_id, receiver_user_id,ntype) VALUES ('"+loginID+"', '"+requestedID+"' , 'Recommendation' )");
+			
+			connection.setAutoCommit(false);
+			connection.commit();
+
+			System.out.println("Sent recommendation request to " + requestedID + " successfully !!! ");
+			System.out.println("Sent Notification for recommendation request to " + requestedID + " successfully !!! ");
+
+		} catch (SQLException e) {
+			System.out.println("recommendation request to " + requestedID + " failed !!! ");
+			e.printStackTrace();
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
 }
