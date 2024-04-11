@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public interface DataStorage {
+	
+	ArrayList<UserAccount> searchUser(String search, String loginID);
 
 	// register / login
 	void createAccount(String loginID, String fname, String lname, String password, String type, String company); // done
@@ -27,11 +29,12 @@ public interface DataStorage {
 	void sendRequestForConnection(String loginID, String requestedID); // if given id of sender and receiver it sends
 																		// connection request to that person
 
-	ArrayList<UserAccount> connectionRequests(String loginID); // view incoming connection request
+	ArrayList<UserAccount> viewIncomingConnRequests(String loginID); // view incoming connection request
+	ArrayList<UserAccount> viewIncomingRecRequests(String loginID); // view incoming connection request
 
 	void updateConnection(String loginID, String requestedID, String status); // update connection request
 
-	Set<UserAccount> viewConnectionProfile(String loginId); // can view profile of given connection
+	UserAccount viewConnectionProfile(String loginId); // can view profile of given connection
 
 	ArrayList<UserAccount> getConnections(String loginID); // view connections profile [ as in people who are connected
 															// to the id which is provided ]
@@ -53,7 +56,7 @@ public interface DataStorage {
 	
 	void sendRequestForRecommendation(String loginID, String requestedID); // sends Recommendation request to that person
 	
-	ArrayList<Recommendation> recommendations(String loginID); // can see recommendations
+	ArrayList<UserAccount> recommendations(String loginID); // can see recommendations
 	
 	void updateRecommendation(String loginID, String requestedID, String updateStatus); //update the recommendations
 	
