@@ -771,30 +771,36 @@ public class SQL_DB implements DataStorage {
 	}
 
 	@Override
-	public ArrayList<UserAccount> recommendations(String loginID) {
+	public ArrayList<Recommendation> recommendations(String loginID) {
 		try {
 
-			ArrayList<UserAccount> rec = new ArrayList<UserAccount>();
+			ArrayList<Recommendation> rec = new ArrayList<Recommendation>();
 
 			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
 			statement = connection.createStatement();
 
-			resultSet = statement
-					.executeQuery("SELECT u.loginID, u.firstName, u.lastName, u.company, u.type\n"
-							+ "FROM recommendation r\n"
-							+ "JOIN users u ON r.receiver_id = u.loginID\n"
-							+ "WHERE r.status = 'Approved' AND r.sender_id = '"+loginID+"'\n"
-							+ "\n"
-							+ "UNION\n"
-							+ "\n"
-							+ "SELECT u.loginID, u.firstName, u.lastName, u.company, u.type\n"
-							+ "FROM recommendation r\n"
-							+ "JOIN users u ON r.sender_id = u.loginID\n"
-							+ "WHERE r.status = 'Approved' AND r.receiver_id = '"+loginID+"'\n"
-							+ "");
+//			resultSet = statement
+//					.executeQuery("SELECT u.loginID, u.firstName, u.lastName, u.company, u.type\n"
+//							+ "FROM recommendation r\n"
+//							+ "JOIN users u ON r.receiver_id = u.loginID\n"
+//							+ "WHERE r.status = 'Approved' AND r.sender_id = '"+loginID+"'\n"
+//							+ "\n"
+//							+ "UNION\n"
+//							+ "\n"
+//							+ "SELECT u.loginID, u.firstName, u.lastName, u.company, u.type\n"
+//							+ "FROM recommendation r\n"
+//							+ "JOIN users u ON r.sender_id = u.loginID\n"
+//							+ "WHERE r.status = 'Approved' AND r.receiver_id = '"+loginID+"'\n"
+//							+ "");
+			
+			resultSet = statement.executeQuery("SELECT r.* FROM recommendation r " +
+	                "WHERE r.status = 'Approved' AND (r.sender_id = '"+loginID+"' OR r.receiver_id = '"+loginID+"')");
+
 
 			while (resultSet.next()) {
-				UserAccount r = new UserAccount(resultSet.getString(1),resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
+//				UserAccount r = new UserAccount(resultSet.getString(1),resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
+//				rec.add(r);
+				Recommendation r = new Recommendation(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4));
 				rec.add(r);
 			}
 

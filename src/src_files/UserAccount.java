@@ -149,13 +149,18 @@ public class UserAccount {
 
 	public void showRec(String loginID) {
 
-		ArrayList<UserAccount> recs = data.recommendations(loginID);
+		ArrayList<Recommendation> recs = data.recommendations(loginID);
 
 		if (!recs.isEmpty()) {
 
 			System.out.println("--- Recommendations  ---");
-			for (UserAccount r : recs) {
-				printUserProfile(r.getLoginID());
+			for (Recommendation r : recs) {
+				
+				if(r.getSenderId().equals(loginID)) 
+					System.out.println("You have been recommended by " +  data.getUserFullName(r.getReceiverId()));
+				else if(r.getReceiverId().equals(loginID))
+					System.out.println("You recommended " + data.getUserFullName(r.getSenderId()));
+				//printUserProfile(r.getLoginID());
 			}
 		} else {
 			System.out.println("--- No Recommendations  ---");

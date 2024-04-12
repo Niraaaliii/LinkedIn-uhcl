@@ -56,7 +56,7 @@ public interface DataStorage {
 	
 	void sendRequestForRecommendation(String loginID, String requestedID); // sends Recommendation request to that person
 	
-	ArrayList<UserAccount> recommendations(String loginID); // can see recommendations
+	ArrayList<Recommendation> recommendations(String loginID); // can see recommendations
 	
 	void updateRecommendation(String loginID, String requestedID, String updateStatus); //update the recommendations
 	
