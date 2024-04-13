@@ -510,42 +510,6 @@ public class SQL_DB implements DataStorage {
 	}
 
 	@Override
-	public int ConnectionCount(String loginId) {
-		try {
-
-			int connCount  = 0 ;
-
-			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
-			statement = connection.createStatement();
-
-			resultSet = statement
-					.executeQuery("SELECT COUNT(connectionID) as con_count  FROM connection "
-							+ "WHERE requesterID = '"+ loginId +"' AND status = 'approved'");
-
-			while (resultSet.next()) {
-				connCount = resultSet.getInt("con_count");
-			}
-
-			return connCount;
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return 0;
-
-		} finally {
-			try {
-				connection.close();
-				statement.close();
-				resultSet.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
-		
-	}
-
-	@Override
 	public void ShareJob(String loginID, int jobID) {
 
 		if (!existsJob(jobID, loginID)) {
@@ -924,5 +888,81 @@ public class SQL_DB implements DataStorage {
 			}
 
 		}
+	}
+
+	@Override
+	public ArrayList<Jobs> viewSharedJobs(String loginID) {
+		try {
+			ArrayList<Jobs> sharedjobs = new ArrayList<Jobs>();
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+
+			resultSet = statement
+					.executeQuery("SELECT j.jobID, j.jobTitle, j.jobDesc, j.creator, js.dateandtime\n"
+							+ "FROM job j\n"
+							+ "INNER JOIN jobsharing js ON j.jobID = js.jobID\n"
+							+ "INNER JOIN users u ON js.userID = u.loginID\n"
+							+ "WHERE js.userID = '"+loginID+"'");
+
+			while (resultSet.next()) {
+					Jobs j = new Jobs( resultSet.getInt(1), resultSet.getString(2) ,resultSet.getString(3) , resultSet.getString(4) ,resultSet.getDate("dateandtime") );
+					sharedjobs.add(j);
+			}
+
+			return sharedjobs;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+	
+	@Override
+	public ArrayList<Jobs> viewPostedJobs(String loginID) {
+		try {
+			ArrayList<Jobs> postedJobs = new ArrayList<Jobs>();
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+
+			resultSet = statement
+					.executeQuery("SELECT j.jobID, j.jobTitle, j.jobDesc, j.creator, j.dateandtime\n"
+							+ "FROM job j\n"
+							+ "WHERE j.creator = '"+loginID+"'");
+
+			while (resultSet.next()) {
+					Jobs j = new Jobs( resultSet.getInt(1), resultSet.getString(2) ,resultSet.getString(3) , resultSet.getString(4) ,resultSet.getDate("dateandtime") );
+					postedJobs.add(j);
+			}
+
+			return postedJobs;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
 	}
 }

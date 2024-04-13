@@ -33,21 +33,10 @@ public class UserAccount {
 		System.out.println("~~~ Welcome " + userName + " !!! ~~~");
 		System.out.println("-----------------------------");
 		showNotifications(loginID);
-		System.out.println("\n Want to see connection recommendations ? enter 'y' for yes : ");
-		choice = input.nextLine();
-		System.out.println();
+		
+		showConnectionRecommendations(loginID);
 
-		if (choice.equals("y"))
-			showConnectionRecommendations(loginID);
-
-		choice = "";
-
-		System.out.println("\n Want to see top 3 job recommendations ? enter 'y' for yes : ");
-		choice = input.nextLine();
-		System.out.println();
-
-		if (choice.equals("y"))
-			showTOP3JobRecommendations(loginID);
+		showTOP3JobRecommendations(loginID);
 
 		String selection = "";
 
@@ -55,11 +44,10 @@ public class UserAccount {
 			System.out.println("-----------------------------");
 			System.out.println("Please Select Option from Below: ");
 			System.out.println("-----------------------------");
-			System.out.println("1: Search User ");
-			System.out.println("2: View Incoming Requests ");
-			System.out.println("3: View Your Connections  ");
-			System.out.println("4: View Jobs By Recruiter ");
-			System.out.println("5: View Your Recommendations  ");
+			System.out.println("1: Jobs ");
+			System.out.println("2: Connections ");
+			System.out.println("3: Recommendations ");
+			System.out.println("4: Search User ");
 			System.out.println("x: Exit");
 
 			selection = input.nextLine();
@@ -67,19 +55,16 @@ public class UserAccount {
 
 			switch (selection) {
 			case "1":
-				searchUser();
+				jobsSection();
 				continue;
 			case "2":
-				showIncomingRequests(loginID);
+				connectionSection();
 				continue;
 			case "3":
-				showConnections(loginID);
+				recommendationSection();
 				continue;
 			case "4":
-				showJobs(loginID);
-				continue;
-			case "5":
-				showRec(loginID);
+				searchUser();
 				continue;
 			case "x":
 				break;
@@ -112,11 +97,10 @@ public class UserAccount {
 			System.out.println("-----------------------------");
 			System.out.println("Please Select Option from Below: ");
 			System.out.println("-----------------------------");
-			System.out.println("1: Search User");
-			System.out.println("2: Post Job ");
-			System.out.println("3: View Incoming Requests ");
-			System.out.println("4: View Your Connections  ");
-			System.out.println("5: View Your Recommendations  ");
+			System.out.println("1: Jobs ");
+			System.out.println("2: Connections ");
+			System.out.println("3: Recommendations ");
+			System.out.println("4: Search User ");
 			System.out.println("x: Exit");
 
 			selection = input.nextLine();
@@ -124,19 +108,16 @@ public class UserAccount {
 
 			switch (selection) {
 			case "1":
-				searchUser();
+				jobsSectionRecruiter();
 				continue;
 			case "2":
-				postJob(loginID);
+				connectionSection();
 				continue;
 			case "3":
-				showIncomingRequests(loginID);
+				recommendationSection();
 				continue;
 			case "4":
-				showConnections(loginID);
-				continue;
-			case "5":
-				showRec(loginID);
+				searchUser();
 				continue;
 			case "x":
 				break;
@@ -147,6 +128,173 @@ public class UserAccount {
 		}
 	}
 
+	public void recommendationSection() {
+		String selection = "";
+
+		while (!selection.equals("x")) {
+			System.out.println("-----------------------------");
+			System.out.println("Please Select Option from Below: ");
+			System.out.println("-----------------------------");
+			System.out.println("1: Send Recommendation Request to Connected People ");
+			System.out.println("2: View Your Recommendations ");
+			System.out.println("x: Exit");
+
+			selection = input.nextLine();
+			System.out.println();
+
+			switch (selection) {
+			case "1":
+				requestRec(loginID);
+				continue;
+			case "2":
+				showRec(loginID);
+				continue;
+			case "x":
+				break;
+			default:
+				System.out.println("Option invalid !!!");
+			}
+		}
+	}
+
+	public void connectionSection() {
+		String selection = "";
+
+		while (!selection.equals("x")) {
+			System.out.println("-----------------------------");
+			System.out.println("Please Select Option from Below: ");
+			System.out.println("-----------------------------");
+			System.out.println("1: Send Connection Request to Recommended People ");
+			System.out.println("2: View Your Connection ");
+			System.out.println("3: View Incoming Connection Request ");
+			System.out.println("x: Exit");
+
+			selection = input.nextLine();
+			System.out.println();
+
+			switch (selection) {
+			case "1":
+				showConnectionRecommendations(loginID);
+				continue;
+			case "2":
+				showConnections(loginID);
+				continue;
+			case "3":
+				showIncomingConnRequests(loginID);
+				continue;
+			case "x":
+				break;
+			default:
+				System.out.println("Option invalid !!!");
+			}
+		}
+	}
+
+	public void jobsSection() {
+		String selection = "";
+
+		while (!selection.equals("x")) {
+			System.out.println("-----------------------------");
+			System.out.println("Please Select Option from Below: ");
+			System.out.println("-----------------------------");
+			System.out.println("1: View Jobs ");
+			System.out.println("2: Your Shared Jobs ");
+			System.out.println("3: View Shared Jobs from Connection ");
+			System.out.println("x: Exit");
+
+			selection = input.nextLine();
+			System.out.println();
+
+			switch (selection) {
+			case "1":
+				showJobs(loginID);
+				continue;
+			case "2":
+				showSharedJobs(loginID);
+				continue;
+			case "3":
+				showTOP3JobRecommendations(loginID);
+				continue;
+			case "x":
+				break;
+			default:
+				System.out.println("Option invalid !!!");
+			}
+		}
+
+	}
+
+	public void jobsSectionRecruiter() {
+		String selection = "";
+
+		while (!selection.equals("x")) {
+			System.out.println("-----------------------------");
+			System.out.println("Please Select Option from Below: ");
+			System.out.println("-----------------------------");
+			System.out.println("1: Post Job ");
+			System.out.println("2: Your Posted Jobs ");
+			System.out.println("x: Exit");
+
+			selection = input.nextLine();
+			System.out.println();
+
+			switch (selection) {
+			case "1":
+				postJob(loginID);
+				continue;
+			case "2":
+				showPostedJobs(loginID);
+				continue;
+			case "x":
+				break;
+			default:
+				System.out.println("Option invalid !!!");
+			}
+		}
+
+	}
+
+	public void showSharedJobs(String loginID) {
+
+		ArrayList<Jobs> sharedJob = data.viewSharedJobs(loginID);
+
+		if (!sharedJob.isEmpty()) {
+			System.out.println("--- Jobs Shared By You ---");
+
+			for (Jobs j : sharedJob) {
+				System.out.println("-----------------------------");
+				System.out.println(
+						" Job Posted by : " + data.getUserFullName(j.getCreator()) + " On " + j.getDateandtime());
+				System.out.println(" Job Title : " + j.getJobTitle());
+				System.out.println(" Job Description : " + j.getJobDesc());
+				System.out.println("-----------------------------");
+			}
+		} else {
+			System.out.println("--- No Jobs Shared By You  ---");
+		}
+
+	}
+
+	public void showPostedJobs(String loginID) {
+
+		ArrayList<Jobs> postedJobs = data.viewPostedJobs(loginID);
+
+		if (!postedJobs.isEmpty()) {
+			System.out.println("--- Jobs Posted By " + loginID + " ---");
+
+			for (Jobs j : postedJobs) {
+				System.out.println("-----------------------------");
+				System.out.println(" Job Posted On " + j.getDateandtime());
+				System.out.println(" Job Title : " + j.getJobTitle());
+				System.out.println(" Job Description : " + j.getJobDesc());
+				System.out.println("-----------------------------");
+			}
+		} else {
+			System.out.println("--- No Jobs Posted By You  ---");
+		}
+
+	}
+
 	public void showRec(String loginID) {
 
 		ArrayList<Recommendation> recs = data.recommendations(loginID);
@@ -155,12 +303,12 @@ public class UserAccount {
 
 			System.out.println("--- Recommendations  ---");
 			for (Recommendation r : recs) {
-				
-				if(r.getSenderId().equals(loginID)) 
-					System.out.println("You have been recommended by " +  data.getUserFullName(r.getReceiverId()));
-				else if(r.getReceiverId().equals(loginID))
+
+				if (r.getSenderId().equals(loginID))
+					System.out.println("You have been recommended by " + data.getUserFullName(r.getReceiverId()));
+				else if (r.getReceiverId().equals(loginID))
 					System.out.println("You recommended " + data.getUserFullName(r.getSenderId()));
-				//printUserProfile(r.getLoginID());
+				// printUserProfile(r.getLoginID());
 			}
 		} else {
 			System.out.println("--- No Recommendations  ---");
@@ -215,16 +363,13 @@ public class UserAccount {
 						data.updateConnection(loginID, n.getSender_id(), "approved");
 					if (n.getNtype().equals("Recommendation"))
 						data.updateRecommendation(loginID, n.getSender_id(), "Approved");
-					
-					
-					
+
 				} else if (selection.equals("n")) {
 					if (n.getNtype().equals("Connection"))
 						data.updateConnection(loginID, n.getSender_id(), "rejected");
 					if (n.getNtype().equals("Recommendation"))
 						data.updateRecommendation(loginID, n.getSender_id(), "Rejected");
-					
-					
+
 				}
 
 				data.updateNotification(n.getId(), "Seen");
@@ -301,19 +446,37 @@ public class UserAccount {
 				if (selection.equals("v")) {
 					printUserProfile(u.getLoginID());
 
-					System.out.println("--- Enter 's' to send request for recommendation : ");
-
-					selection = input.nextLine();
-
-					if (selection.equals("s"))
-						data.sendRequestForRecommendation(loginid, u.getLoginID());
-					else
-						continue;
-
-					selection = "";
-
 				} else
 					continue;
+			}
+		} else {
+			System.out.println("--- No Connection List Available For " + getFirstName() + " " + getLastName() + " ---");
+		}
+	}
+
+	public void requestRec(String loginid) {
+
+		String selection = "";
+
+		ArrayList<UserAccount> userConn = data.getConnections(loginid);
+
+		if (!userConn.isEmpty()) {
+			System.out.println("--- Your Connection List  ---");
+			System.out.println("--- Enter 's' to send request for recommendation : ");
+
+			for (UserAccount u : userConn) {
+
+				printUserAccount(u);
+
+				selection = input.nextLine();
+
+				if (selection.equals("s"))
+					data.sendRequestForRecommendation(loginid, u.getLoginID());
+				else
+					continue;
+
+				selection = "";
+
 			}
 		} else {
 			System.out.println("--- No Connection List Available For " + getFirstName() + " " + getLastName() + " ---");
@@ -345,7 +508,7 @@ public class UserAccount {
 
 			}
 		} else {
-			System.out.println("--- No Recommendations Available Within " + getCompany() + " ---");
+			System.out.println("\n --- No Recommendations Available Within " + getCompany() + " ---");
 		}
 		if (!SecondDegree.isEmpty()) {
 
@@ -365,19 +528,19 @@ public class UserAccount {
 
 			}
 		} else {
-			System.out.println("--- No 2nd Degree Recommendations Available ---");
+			System.out.println("\n --- No 2nd Degree Recommendations Available ---");
 		}
 
 	}
 
-	public void showIncomingRequests(String loginId) {
+	public void showIncomingConnRequests(String loginId) {
 		ArrayList<UserAccount> Connreq = data.viewIncomingConnRequests(loginId);
-		
+
 		String selection = "";
 
 		if (!Connreq.isEmpty()) {
 
-			System.out.println(" ------ Incoming Connection Requests ------ ");
+			System.out.println("\n ------ Incoming Connection Requests ------ ");
 			System.out.println(
 					"\n --- Enter 'y' to accept connection request, 'n' to reject or press enter for next : --- \n");
 
@@ -389,23 +552,26 @@ public class UserAccount {
 
 				if (selection.equals("y")) {
 					data.updateConnection(loginId, u.getLoginID(), "approved");
-					
+
 				} else if (selection.equals("n")) {
 					data.updateConnection(loginId, u.getLoginID(), "rejected");
-					
+
 				} else
 					continue;
 
 			}
 		} else {
-			System.out.println("--- No Incoming Connection Request Available ---");
+			System.out.println("\n --- No Incoming Connection Request Available ---");
 		}
-		
+	}
+
+	public void showIncomingRecRequests(String loginId) {
+		String selection = "";
 		ArrayList<UserAccount> Recreq = data.viewIncomingRecRequests(loginId);
-		
+
 		if (!Recreq.isEmpty()) {
 
-			System.out.println(" ------ Incoming Recommendation Requests ------ ");
+			System.out.println("\n ------ Incoming Recommendation Requests ------ ");
 			System.out.println(
 					"\n --- Enter 'y' to accept connection request, 'n' to reject or press enter for next : --- \n");
 
@@ -424,7 +590,7 @@ public class UserAccount {
 
 			}
 		} else {
-			System.out.println("--- No Incoming Recommendation Request Available ---");
+			System.out.println("\n --- No Incoming Recommendation Request Available ---");
 		}
 	}
 
@@ -461,7 +627,6 @@ public class UserAccount {
 				System.out.println("Position : Staff");
 			else
 				System.out.println("Position : " + conProf.getType());
-			System.out.println("No. of Connections : " + data.ConnectionCount(profileID));
 			System.out.println("-------------------------------------------------------");
 
 		} else {
@@ -477,8 +642,7 @@ public class UserAccount {
 
 		if (!jobRec.isEmpty()) {
 
-			System.out.println("\n    --- Job Ads --- \n");
-			System.out.println(" --- Recent Jobs Shared By Your Connections --- ");
+			System.out.println("\n --- Recent Jobs Shared By Your Connections --- ");
 			System.out.println("\n --- Enter 'y' to share with your connections: --- \n");
 
 			for (Jobs j : jobRec) {
@@ -494,7 +658,7 @@ public class UserAccount {
 
 			}
 		} else {
-			System.out.println("--- No Recent Job Recommendations ---");
+			System.out.println("\n --- No Recent Job Recommendations ---");
 		}
 
 	}

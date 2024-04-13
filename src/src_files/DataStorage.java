@@ -22,6 +22,8 @@ public interface DataStorage {
 	
 	void PostJob(String loginID, String jobTitle, String jobDesc); //post a job
 
+	ArrayList<Jobs> viewSharedJobs(String loginID); 
+	ArrayList<Jobs> viewPostedJobs(String loginID); 
 
 	ArrayList<Jobs> jobRecommendations(String loginID); // give job recommendations based what connections posted
 
@@ -44,8 +46,6 @@ public interface DataStorage {
 
 	Set<UserAccount> connectionRecommendations2ndDegree(String loginID); // connection recommendation based on people
 																			// who are already connected
-	
-	int ConnectionCount(String loginId);
 
 	//notification
 	ArrayList<Notifications> notifications(String loginID); // can see notification
