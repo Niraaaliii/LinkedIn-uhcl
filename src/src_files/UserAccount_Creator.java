@@ -2,14 +2,14 @@ package src_files;
 
 import java.util.Scanner;
 
-public class UserAccount_Functions {
+public class UserAccount_Creator {
 	private Scanner input = new Scanner(System.in);
 
 	private UserAccount theUserAccount;
 
 	DataStorage data;
 
-	public UserAccount_Functions(DataStorage d) {
+	public UserAccount_Creator(DataStorage d) {
 		data = d;
 		theUserAccount = null;
 	}
@@ -136,4 +136,6 @@ public class UserAccount_Functions {
 		}
 		return true;
 	}
+	
+	
 }

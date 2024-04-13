@@ -23,8 +23,8 @@ public class LinkUHCL_System {
 			selection = input.nextLine();
 			System.out.println();
 			
-			if(selection.equals("1"))  new UserAccount_Functions(data).createAccount();
-			else if(selection.equals("2"))   new UserAccount_Functions(data).login();
+			if(selection.equals("1"))  new UserAccount_Creator(data).createAccount();
+			else if(selection.equals("2"))   new UserAccount_Creator(data).login();
 		}
 	}
 }
