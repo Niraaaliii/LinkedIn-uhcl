@@ -84,12 +84,7 @@ public class UserAccount {
 		System.out.println("~~~ Welcome " + userName + " !!! ~~~");
 		System.out.println("-----------------------------");
 		showNotifications(loginID);
-		System.out.println("Want to see connection recommendations ? enter 'y' for yes : ");
-		choice = input.nextLine();
-		System.out.println();
-
-		if (choice.equals("y"))
-			showConnectionRecommendations(loginID);
+		showConnectionRecommendations(loginID);
 
 		String selection = "";
 
