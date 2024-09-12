@@ -13,7 +13,7 @@ public class SQL_DB implements DataStorage {
 
 	Connection connection = null;
 	Statement statement = null;
-	ResultSet resultSet = null , resultSet1 = null;
+	ResultSet resultSet = null;
 
 	@Override
 	public void createAccount(String loginID, String fname, String lname, String password, String type,
@@ -96,13 +96,6 @@ public class SQL_DB implements DataStorage {
 							+ "and requestedID = '" + loginID + "'");
 
 			
-			/*
-			 * SELECT * FROM `connection` WHERE `requesterID` = 'lin#111' AND status = 'approved' 
-			UNION
-				SELECT * FROM `connection` WHERE `requestedID` = 'lin#111' AND status = 'approved';
-			 * 
-			 */
-			
 			while (resultSet.next()) {
 				UserAccount ua = new UserAccount(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3),
 						resultSet.getString(5), resultSet.getString(4));
@@ -125,73 +118,7 @@ public class SQL_DB implements DataStorage {
 
 		}
 	}
-
-	@Override
-	public String getUserFullName(String id) {
-		try {
-
-			String fullname = "";
-
-			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery("Select * from users " + "where loginID = '" + id + "'");
-
-			if (resultSet.next()) {
-				fullname = resultSet.getNString(2) + " " + resultSet.getString(3);
-			}
-
-			return fullname;
-		} catch (SQLException e) {
-
-			e.printStackTrace();
-			return null;
-
-		} finally {
-			try {
-				connection.close();
-				statement.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
-
 	
-
-	@Override
-	public void sendRequestForConnection(String loginID, String requestedID) {
-
-		try {
-
-			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
-			statement = connection.createStatement();
-			statement.executeUpdate("INSERT INTO connection(requesterID, requestedID) VALUES ( '" + loginID + "','"
-					+ requestedID + "')");
-
-			statement.executeUpdate("INSERT INTO notification(sender_user_id, receiver_user_id,ntype) VALUES ('"+loginID+"', '"+requestedID+"' , 'Connection' )");
-			
-			connection.setAutoCommit(false);
-			connection.commit();
-
-			System.out.println("Sent connection request to " + requestedID + " successfully !!! ");
-			System.out.println("Sent Notification for connection request to " + requestedID + " successfully !!! ");
-
-		} catch (SQLException e) {
-			System.out.println("connection request to " + requestedID + " failed !!! ");
-			e.printStackTrace();
-
-		} finally {
-			try {
-				connection.close();
-				statement.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
-
 	@Override
 	public UserAccount viewConnectionProfile(String loginId) {
 		
@@ -228,6 +155,154 @@ public class SQL_DB implements DataStorage {
 
 		}
 
+	}
+	
+	@Override
+	public void updateConnection(String loginID, String requesterID, String status) {
+		
+		try {
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+
+			statement.executeUpdate("UPDATE connection SET status = '"+ status +"' WHERE requesterID = '"+ requesterID  +"' AND requestedID = '"+ loginID +"'");
+
+			connection.setAutoCommit(false);
+			connection.commit();
+
+			System.out.println(" connection request from " + requesterID + " " + status  +" successfully !!! ");
+			
+			
+			
+		} catch (SQLException e) {
+			System.out.println(" connection request from " + requesterID + " failed to "+ status +" !!! ");
+			e.printStackTrace();
+			
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+	
+	@Override
+	public void sendRequestForConnection(String loginID, String requestedID) {
+
+		try {
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+			statement.executeUpdate("INSERT INTO connection(requesterID, requestedID) VALUES ( '" + loginID + "','"
+					+ requestedID + "')");
+
+			statement.executeUpdate("INSERT INTO notification(sender_user_id, receiver_user_id,ntype) VALUES ('"+loginID+"', '"+requestedID+"' , 'Connection' )");
+			
+			connection.setAutoCommit(false);
+			connection.commit();
+
+			System.out.println("Sent connection request to " + requestedID + " successfully !!! ");
+			System.out.println("Sent Notification for connection request to " + requestedID + " successfully !!! ");
+
+		} catch (SQLException e) {
+			System.out.println("connection request to " + requestedID + " failed !!! ");
+			e.printStackTrace();
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	@Override
+	public ArrayList<UserAccount> viewIncomingConnRequests(String loginID) {
+		try {
+
+			ArrayList<UserAccount> connectionRec = new ArrayList<UserAccount>();
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+
+			resultSet = statement
+					.executeQuery("SELECT c.requesterID, u.firstName, u.lastName, u.company, u.type\n"
+							+ "FROM connection c\n"
+							+ "JOIN users u ON c.requesterID = u.loginID\n"
+							+ "WHERE c.requestedID = '"+loginID+"' AND c.status = 'pending'\n"
+							+ "\n"
+							+ "UNION\n"
+							+ "\n"
+							+ "SELECT c.requestedID, u.firstName, u.lastName, u.company, u.type\n"
+							+ "FROM connection c\n"
+							+ "JOIN users u ON c.requestedID = u.loginID\n"
+							+ "WHERE c.requesterID = '"+loginID+"' AND c.status = 'pending'\n"
+							+ "");
+
+			while (resultSet.next()) {
+				UserAccount ua = new UserAccount(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3),
+						resultSet.getString(4), resultSet.getString(5));
+				connectionRec.add(ua);
+			}
+
+			return connectionRec;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+	
+
+	@Override
+	public String getUserFullName(String id) {
+		try {
+
+			String fullname = "";
+
+			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery("Select * from users " + "where loginID = '" + id + "'");
+
+			if (resultSet.next()) {
+				fullname = resultSet.getNString(2) + " " + resultSet.getString(3);
+			}
+
+			return fullname;
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+			return null;
+
+		} finally {
+			try {
+				connection.close();
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
 	}
 
 	@Override
@@ -378,53 +453,6 @@ public class SQL_DB implements DataStorage {
 
 	}
 
-	@Override
-	public ArrayList<UserAccount> viewIncomingConnRequests(String loginID) {
-		try {
-
-			ArrayList<UserAccount> connectionRec = new ArrayList<UserAccount>();
-
-			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
-			statement = connection.createStatement();
-
-			resultSet = statement
-					.executeQuery("SELECT c.requesterID, u.firstName, u.lastName, u.company, u.type\n"
-							+ "FROM connection c\n"
-							+ "JOIN users u ON c.requesterID = u.loginID\n"
-							+ "WHERE c.requestedID = '"+loginID+"' AND c.status = 'pending'\n"
-							+ "\n"
-							+ "UNION\n"
-							+ "\n"
-							+ "SELECT c.requestedID, u.firstName, u.lastName, u.company, u.type\n"
-							+ "FROM connection c\n"
-							+ "JOIN users u ON c.requestedID = u.loginID\n"
-							+ "WHERE c.requesterID = '"+loginID+"' AND c.status = 'pending'\n"
-							+ "");
-
-			while (resultSet.next()) {
-				UserAccount ua = new UserAccount(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3),
-						resultSet.getString(4), resultSet.getString(5));
-				connectionRec.add(ua);
-			}
-
-			return connectionRec;
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-
-		} finally {
-			try {
-				connection.close();
-				statement.close();
-				resultSet.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
-
-	}
 	
 	@Override
 	public ArrayList<UserAccount> viewIncomingRecRequests(String loginID) {
@@ -474,40 +502,7 @@ public class SQL_DB implements DataStorage {
 
 	}
 
-	@Override
-	public void updateConnection(String loginID, String requesterID, String status) {
-		
-		try {
-
-			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
-			statement = connection.createStatement();
-
-			statement.executeUpdate("UPDATE connection SET status = '"+ status +"' WHERE requesterID = '"+ requesterID  +"' AND requestedID = '"+ loginID +"'");
-
-			connection.setAutoCommit(false);
-			connection.commit();
-
-			System.out.println(" connection request from " + requesterID + " " + status  +" successfully !!! ");
-			
-			
-			
-		} catch (SQLException e) {
-			System.out.println(" connection request from " + requesterID + " failed to "+ status +" !!! ");
-			e.printStackTrace();
-			
-
-		} finally {
-			try {
-				connection.close();
-				statement.close();
-				resultSet.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
-
-	}
+	
 
 	@Override
 	public void ShareJob(String loginID, int jobID) {
@@ -742,28 +737,12 @@ public class SQL_DB implements DataStorage {
 
 			connection = DriverManager.getConnection(DATABASE_URL, db_id, db_psw);
 			statement = connection.createStatement();
-
-//			resultSet = statement
-//					.executeQuery("SELECT u.loginID, u.firstName, u.lastName, u.company, u.type\n"
-//							+ "FROM recommendation r\n"
-//							+ "JOIN users u ON r.receiver_id = u.loginID\n"
-//							+ "WHERE r.status = 'Approved' AND r.sender_id = '"+loginID+"'\n"
-//							+ "\n"
-//							+ "UNION\n"
-//							+ "\n"
-//							+ "SELECT u.loginID, u.firstName, u.lastName, u.company, u.type\n"
-//							+ "FROM recommendation r\n"
-//							+ "JOIN users u ON r.sender_id = u.loginID\n"
-//							+ "WHERE r.status = 'Approved' AND r.receiver_id = '"+loginID+"'\n"
-//							+ "");
 			
 			resultSet = statement.executeQuery("SELECT r.* FROM recommendation r " +
 	                "WHERE r.status = 'Approved' AND (r.sender_id = '"+loginID+"' OR r.receiver_id = '"+loginID+"')");
 
 
 			while (resultSet.next()) {
-//				UserAccount r = new UserAccount(resultSet.getString(1),resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
-//				rec.add(r);
 				Recommendation r = new Recommendation(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4));
 				rec.add(r);
 			}

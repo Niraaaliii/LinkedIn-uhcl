@@ -22,8 +22,9 @@ public interface DataStorage {
 	
 	void PostJob(String loginID, String jobTitle, String jobDesc); //post a job
 
-	ArrayList<Jobs> viewSharedJobs(String loginID); 
-	ArrayList<Jobs> viewPostedJobs(String loginID); 
+	ArrayList<Jobs> viewSharedJobs(String loginID);  // view your shared job
+	
+	ArrayList<Jobs> viewPostedJobs(String loginID); // view your posted job
 
 	ArrayList<Jobs> jobRecommendations(String loginID); // give job recommendations based what connections posted
 
@@ -32,6 +33,7 @@ public interface DataStorage {
 																		// connection request to that person
 
 	ArrayList<UserAccount> viewIncomingConnRequests(String loginID); // view incoming connection request
+	
 	ArrayList<UserAccount> viewIncomingRecRequests(String loginID); // view incoming connection request
 
 	void updateConnection(String loginID, String requestedID, String status); // update connection request

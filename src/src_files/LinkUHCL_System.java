@@ -10,7 +10,6 @@ public class LinkUHCL_System {
 		String selection = "";
 		DataStorage data = new SQL_DB();
 
-
 		while (!selection.equals("x")) {
 			
 			System.out.println();

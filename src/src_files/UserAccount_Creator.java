@@ -14,8 +14,6 @@ public class UserAccount_Creator {
 		theUserAccount = null;
 	}
 	
-
-
 	public void createAccount() {
 
 		System.out.println("Please enter your username [loginID] : ");

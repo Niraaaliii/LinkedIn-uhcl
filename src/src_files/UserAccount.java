@@ -33,7 +33,7 @@ public class UserAccount {
 		System.out.println("~~~ Welcome " + userName + " !!! ~~~");
 		System.out.println("-----------------------------");
 		showNotifications(loginID);
-		
+
 		showConnectionRecommendations(loginID);
 
 		showTOP3JobRecommendations(loginID);
@@ -122,7 +122,7 @@ public class UserAccount {
 
 		}
 	}
-	
+
 	public void connectionSection() {
 		String selection = "";
 
@@ -130,9 +130,10 @@ public class UserAccount {
 			System.out.println("-----------------------------");
 			System.out.println("Please Select Option from Below: ");
 			System.out.println("-----------------------------");
-			System.out.println("1: Send Connection Request to Recommended People ");
-			System.out.println("2: View Your Connection ");
-			System.out.println("3: View Incoming Connection Request ");
+
+			System.out.println("1: View Your Connection ");
+			System.out.println("2: View Incoming Connection Request ");
+			System.out.println("3: Send Connection Request to Recommended People ");
 			System.out.println("x: Exit");
 
 			selection = input.nextLine();
@@ -140,13 +141,14 @@ public class UserAccount {
 
 			switch (selection) {
 			case "1":
-				showConnectionRecommendations(loginID);
-				continue;
-			case "2":
 				showConnections(loginID);
 				continue;
-			case "3":
+			case "2":
 				showIncomingConnRequests(loginID);
+				continue;
+			case "3":
+				showConnectionRecommendations(loginID);
+
 				continue;
 			case "x":
 				break;
@@ -163,8 +165,8 @@ public class UserAccount {
 			System.out.println("-----------------------------");
 			System.out.println("Please Select Option from Below: ");
 			System.out.println("-----------------------------");
-			System.out.println("1: Send Recommendation Request to Connected People ");
-			System.out.println("2: View Your Recommendations ");
+			System.out.println("1: View Your Recommendations ");
+			System.out.println("2: Send Recommendation Request to Connected People ");
 			System.out.println("x: Exit");
 
 			selection = input.nextLine();
@@ -172,10 +174,10 @@ public class UserAccount {
 
 			switch (selection) {
 			case "1":
-				requestRec(loginID);
+				showRec(loginID);
 				continue;
 			case "2":
-				showRec(loginID);
+				requestRec(loginID);
 				continue;
 			case "x":
 				break;
@@ -184,7 +186,7 @@ public class UserAccount {
 			}
 		}
 	}
-	
+
 	public void jobsSection() {
 		String selection = "";
 
@@ -248,8 +250,7 @@ public class UserAccount {
 		}
 
 	}
-	
-	
+
 	public void showNotifications(String loginID) {
 
 		String selection = "";
@@ -296,8 +297,6 @@ public class UserAccount {
 		System.out.println("");
 	}
 
-	
-	
 	public void requestRec(String loginid) {
 
 		String selection = "";
@@ -326,8 +325,6 @@ public class UserAccount {
 			System.out.println("--- No Connection List Available For " + getFirstName() + " " + getLastName() + " ---");
 		}
 	}
-
-	
 
 	public void showIncomingRecRequests(String loginId) {
 		String selection = "";
@@ -379,8 +376,6 @@ public class UserAccount {
 
 	}
 
-
-	
 	public void showConnections(String loginid) {
 
 		String selection = "";
@@ -407,7 +402,7 @@ public class UserAccount {
 			System.out.println("--- No Connection List Available For " + getFirstName() + " " + getLastName() + " ---");
 		}
 	}
-	
+
 	public void showConnectionRecommendations(String loginid) {
 
 		String selection = "";
@@ -489,7 +484,6 @@ public class UserAccount {
 			System.out.println("\n --- No Incoming Connection Request Available ---");
 		}
 	}
-	
 
 	public void showTOP3JobRecommendations(String loginid) {
 
@@ -519,7 +513,6 @@ public class UserAccount {
 		}
 
 	}
-
 
 	public void showSharedJobs(String loginID) {
 
@@ -561,7 +554,7 @@ public class UserAccount {
 		}
 
 	}
-	
+
 	public void postJob(String loginID) {
 
 		System.out.println("Enter Job Title");
@@ -602,7 +595,6 @@ public class UserAccount {
 
 	}
 
-	
 	public void printJob(Jobs jb) {
 
 		System.out.println("-----------------------------");
@@ -614,7 +606,7 @@ public class UserAccount {
 		System.out.println("");
 
 	}
-	
+
 	public void searchUser() {
 
 		String selection = "";
@@ -639,9 +631,6 @@ public class UserAccount {
 			System.out.println("--- No Search Result Found ---");
 		}
 	}
-
-	
-
 
 	public void printUserAccount(UserAccount ua) {
 		if (ua.getType().equals("Regular")) {
@@ -671,7 +660,6 @@ public class UserAccount {
 		}
 	}
 
-	
 	public String getLoginID() {
 		return loginID;
 	}
